@@ -19,6 +19,12 @@ use Twig\Markup;
 use Craft;
 use craft\base\Component;
 use craft\helpers\Template;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
+use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\Writer\ValidationException;
 
 /**
  * @author    webdna
@@ -46,6 +52,18 @@ class QRCodeService extends Component
             $generator->setSize($size);
         }
 
-        return Template::raw($generator->writeDataUri());
+        
+$writer = new PngWriter();
+
+// Create QR code
+$qrCode = QrCode::create($data)
+    ->setEncoding(new Encoding('UTF-8'))
+    ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
+    ->setSize($size)
+    ->setMargin(10)
+    ->setRoundBlockSizeMode(new RoundBlockSizeModeMargin())
+
+
+        return Template::raw( $writer->write($qrCode) );
     }
 }
